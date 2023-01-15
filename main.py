@@ -3,6 +3,7 @@ import os
 import sys
 import json
 from lib.Blast import Blast
+from lib.Circos import Circos
 
 
 def get_config():
@@ -24,8 +25,8 @@ def get_config():
 
 def main():
     config = get_config()
-    blast = Blast(config)
-    blast.duplicate_analysis()
+    circos = Circos(config)
+    duplication_links = circos.get_duplication_links()
 
 
 if __name__ == '__main__':
