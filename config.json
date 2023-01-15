@@ -1,0 +1,8 @@
+{
+  "sequences": [
+    "test_data/contig_2.fasta",
+    "test_data/contig_68.fasta"
+  ],
+  "output_dir": "output",
+  "min_duplication_length": 10000
+}
