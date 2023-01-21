@@ -4,5 +4,7 @@
     "test_data/contig_68.fasta"
   ],
   "output_dir": "output",
-  "min_duplication_length": 10000
+  "min_duplication_length": 10000,
+  "cds_reference": "test_data/mt_CDS_uniqSeq.fasta",
+  "min_distance_between_labels": 2000
 }

@@ -58,6 +58,6 @@ class Blast:
                 with open(sequence, 'r') as file:
                     for line in file:
                         if line.startswith('>'):
-                            out.write(f">h{index}\n")
+                            out.write(f">h{index + 1}\n")
                         else:
                             out.write(line)

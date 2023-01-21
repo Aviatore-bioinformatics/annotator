@@ -26,7 +26,8 @@ def get_config():
 def main():
     config = get_config()
     circos = Circos(config)
-    duplication_links = circos.get_duplication_links()
+    circos.run()
+
 
 
 if __name__ == '__main__':
