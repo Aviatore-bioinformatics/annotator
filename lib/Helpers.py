@@ -70,6 +70,20 @@ def get_fasta_length(file_name: str):
     return length
 
 
+def change_str_to_int(collection: List[List[str]], indexes_to_change: List[int]):
+    output = []
+
+    for line_splitted in collection:
+        line_mod = []
+        for index, item in enumerate(line_splitted):
+            if index in indexes_to_change:
+                line_mod.append(int(line_splitted[index]))
+            else:
+                line_mod.append(line_splitted[index])
+        output.append(line_mod)
+
+    return output
+
 # _min_distance = 10
 # _max_distance = 100
 # _data = [2,5,8]

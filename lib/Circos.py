@@ -2,7 +2,7 @@ import os
 import shutil
 from typing import List
 from lib.Blast import Blast
-from lib.Helpers import separate_array_values, get_center_value, get_fasta_length
+from lib.Helpers import separate_array_values, get_center_value, get_fasta_length, change_str_to_int
 
 
 class Circos:
@@ -174,8 +174,139 @@ class Circos:
 
         return output
 
+    def get_links_for_gene(self, collection: List[List[str]]):
+        output = []
+        indexes_to_change = [3, 4, 5, 6]
+        collection = change_str_to_int(collection, indexes_to_change)
+
+        gene_indexes = []
+        for i in range(len(collection)):
+            gene_indexes.append(i)
+
+        for i in gene_indexes:
+            for index, line_splitted in enumerate(collection):
+                if index != i:
+                    if collection[i][3] < collection[i][4] and collection[index][3] < collection[index][4]:
+                        if (collection[i][3] <= collection[index][3] and collection[i][4] > collection[index][3]) \
+                                or (collection[i][3] >= collection[index][3] and collection[i][3] < collection[index][4]):
+                            if collection[i][3] < collection[index][3]:
+                                start1 = collection[i][5] + (collection[index][3] - collection[i][3])
+                                start2 = collection[index][5]
+                            else:
+                                start1 = collection[i][5]
+                                start2 = collection[index][5] + (collection[i][3] - collection[index][3])
+
+                            if collection[i][4] < collection[index][4]:
+                                end1 = collection[i][6]
+                                end2 = collection[index][6] - (collection[index][4] - collection[i][4])
+                            else:
+                                end1 = collection[i][6] - (collection[i][4] - collection[index][4])
+                                end2 = collection[index][6]
+
+                            output_arr = [collection[i][0], str(start1), str(end1), collection[index][0], str(start2), str(end2), 'twist=yes']
+                            output.append('\t'.join(output_arr))
+                    elif collection[i][3] > collection[i][4] and collection[index][3] > collection[index][4]:
+                        if (collection[i][4] <= collection[index][4] and collection[i][3] > collection[index][4]) \
+                                or (collection[i][4] >= collection[index][4] and collection[i][4] < collection[index][3]):
+                            start1 = 0
+                            end1 = 0
+                            start2 = 0
+                            end2 = 0
+
+                            if collection[i][3] < collection[index][3]:
+                                start1 = collection[i][5]
+                                start1 = collection[index][5] + (collection[index][3] - collection[i][3])
+                            else:
+                                start1 = collection[i][5] + (collection[i][3] - collection[index][3])
+                                start2 = collection[index][5]
+
+                            if collection[i][4] < collection[index][4]:
+                                end1 = collection[i][6] - (collection[index][4] - collection[i][4])
+                                end2 = collection[index][6]
+                            else:
+                                end1 = collection[i][6]
+                                end2 = collection[index][6] - (collection[i][4] - collection[index][4])
+
+                            output_arr = [collection[i][0], str(start1), str(end1), collection[index][0], str(start2), str(end2), 'twist=yes']
+                            output.append('\t'.join(output_arr))
+                    elif collection[i][3] > collection[i][4] and collection[index][3] < collection[index][4]:
+                        if (collection[i][4] < collection[index][4] and collection[i][3] > collection[index][3]) or (
+                                collection[i][4] > collection[index][4] and collection[i][3] < collection[index][3]):
+                            start1 = 0
+                            end1 = 0
+                            start2 = 0
+                            end2 = 0
+
+                            if collection[i][3] < collection[index][3]:
+                                start1 = collection[i][5]
+                                end2 = collection[index][6] - (collection[index][4] - collection[i][3])
+                            else:
+                                start1 = collection[i][5] + (collection[i][3] - collection[index][4])
+                                end2 = collection[index][6]
+
+                            if collection[i][4] < collection[index][3]:
+                                end1 = collection[i][6] - (collection[index][3] - collection[i][4])
+                                start2 = collection[index][5]
+                            else:
+                                end1 = collection[i][6]
+                                start2 = collection[index][5] - (collection[i][4] - collection[index][3])
+
+                            output_arr = [collection[i][0], str(start1), str(end1), collection[index][0], str(start2), str(end2), 'twist=no']
+                            output.append('\t'.join(output_arr))
+                    elif collection[i][3] < collection[i][4] and collection[index][3] > collection[index][4]:
+                        if (collection[i][3] < collection[index][3] and collection[i][4] > collection[index][4]) or (
+                                collection[i][3] > collection[index][3] and collection[i][4] < collection[index][4]):
+                            start1 = 0
+                            end1 = 0
+                            start2 = 0
+                            end2 = 0
+
+                            if collection[i][3] < collection[index][4]:
+                                start1 = collection[index][5] + (collection[index][4] - collection[i][3])
+                                end2 = collection[index][6]
+                            else:
+                                start1 = collection[i][5]
+                                end2 = collection[index][6] - (collection[i][3] - collection[index][4])
+
+                            if collection[i][4] < collection[index][3]:
+                                end1 = collection[i][6]
+                                start2 = collection[index][5] + (collection[index][3] - collection[i][4])
+                            else:
+                                end1 = collection[i][6] - (collection[i][4] - collection[index][3])
+                                start2 = collection[index][5]
+
+                            output_arr = [collection[i][0], str(start1), str(end1), collection[index][0], str(start2), str(end2), 'twist=no']
+                            output.append('\t'.join(output_arr))
+
+        return output
+
+    def get_links(self, collection: List[List[str]], gene_type: str):
+        prefix = ''
+        if gene_type == 'tRNA':
+            prefix = 'trn'
+        elif gene_type == 'rRNA':
+            prefix = 'rrn'
+
+        output = []
+        gene_name = ""
+        gene_collection = []
+
+        for index, line_splitted in enumerate(collection):
+            if line_splitted[1].startswith(prefix):
+                if gene_name == "" or line_splitted[1] == gene_name:
+                    gene_collection.append(line_splitted)
+                else:
+                    output.extend(self.get_links_for_gene(gene_collection))
+                    gene_collection = []
+                gene_name = line_splitted[1]
+
+        output.extend(self.get_links_for_gene(gene_collection))
+
+        return output
+
     def run(self):
         self.prepare_cds_reference()
+        content_all_seq = []
 
         for index, sequence in enumerate(self.blast.fasta_files):
 
@@ -184,6 +315,7 @@ class Circos:
             content = []
             for line in result.stdout.splitlines():
                 content.append(line.split('\t'))
+                content_all_seq.append([f"h{index + 1}"] + line.split('\t'))
 
             result_sorted_by_name = sorted(content, key=lambda x: x[0])
 
@@ -204,8 +336,14 @@ class Circos:
             self.connectors['plus'].extend(
                 self.get_names(modified_names, 'plus', index, sequence, without_names=True))
 
-        for i in self.connectors['plus']:
+        content_all_seq_sorted_by_name = sorted(content_all_seq, key=lambda x: x[1])
+
+        self.links['prot'] = self.get_links(content_all_seq_sorted_by_name, 'prot')
+        self.links['rrna'] = self.get_links(content_all_seq_sorted_by_name, 'rRNA')
+        self.links['trna'] = self.get_links(content_all_seq_sorted_by_name, 'tRNA')
+        for i in self.links['rrna']:
             print(i)
+        exit()
 
 
         # for key in self.highlights.keys():
