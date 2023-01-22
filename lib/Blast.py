@@ -8,6 +8,7 @@ class Blast:
         self.config = config
         self.fasta_output_path = os.path.join(self.config['output_dir'], 'fasta')
         self.fasta_files = []
+        self.fasta_seq_names = []
 
     def merge_sequences(self, fasta_sequences, output_path):
         log_information('Start merging FASTA sequences')
@@ -58,6 +59,7 @@ class Blast:
                 with open(sequence, 'r') as file:
                     for line in file:
                         if line.startswith('>'):
+                            self.fasta_seq_names.append(line.rstrip().replace('>', ''))
                             out.write(f">h{index + 1}\n")
                         else:
                             out.write(line)

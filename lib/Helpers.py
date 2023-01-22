@@ -27,7 +27,7 @@ def separate_array_values(arr: List[int], min_value: int, max_value: int):
     for i in range(1, len(arr)):
         diff = arr[i] - arr[i - 1]
         a = min_value - diff
-        half = a / 2
+        half = int(a / 2)
         m = False
         if diff < min_value:
             if arr[i] + half > max_value:
@@ -83,6 +83,13 @@ def change_str_to_int(collection: List[List[str]], indexes_to_change: List[int])
         output.append(line_mod)
 
     return output
+
+
+def write_to_file(collection: List[str], file_name: str):
+    with open(file_name, 'w') as file:
+        for line_splitted in collection:
+            # output_line = '\t'.join(line_splitted)
+            file.write(f"{line_splitted}\n")
 
 # _min_distance = 10
 # _max_distance = 100
